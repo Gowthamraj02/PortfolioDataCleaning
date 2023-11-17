@@ -1,152 +1,149 @@
 /* Cleaning Data Using SQL Queries*/
-select * from GowthamrajPortfolio..HousingNashville
+SELECT * FROM GowthamrajPortfolio..HousingNashville
 
---Standardizing Date
+--StANDardizing Date
 
-select SaleDate, convert(date,saledate) as SaleDateStd from GowthamrajPortfolio..HousingNashville
+SELECT SaleDate, cONvert(date,saledate) AS SaleDateStd FROM GowthamrajPortfolio..HousingNashville
 
-update HousingNashville
-set SaleDate = CONVERT(date,saledate)  --Using UPDATE it works mostly but now it didnt work so lets go with ALTER
+UPDATE HousingNashville
+SET SaleDate = CONVERT(date,saledate)  --Using UPDATE it works mostly but now it didnt work so lets go WITH ALTER
 
-select SaleDateStandardized from GowthamrajPortfolio..HousingNashville
+SELECT SaleDateStANDardized FROM GowthamrajPortfolio..HousingNashville
 
-alter table HousingNashville
-add SaleDateStandardized Date
+ALTER TABLE HousingNashville
+ADD SaleDateStANDardized Date
 
-update HousingNashville
-set SaleDateStandardized = CONVERT(date,saledate)
+UPDATE HousingNashville
+SET SaleDateStANDardized = CONVERT(date,saledate)
 
---Populating possible null values
+--Populating possible NULL values
 
-select * from GowthamrajPortfolio..HousingNashville
-select UniqueID, parcelid,propertyaddress from HousingNashville
-where PropertyAddress is not null
+SELECT * FROM GowthamrajPortfolio..HousingNashville
+SELECT UniqueID, parcelid,propertyADDress FROM HousingNashville
+WHERE PropertyAddress IS NOT NULL
 
-select a.parcelid, a.propertyaddress,b.parcelid, b.PropertyAddress --//viewing just possible outcome data
-from GowthamrajPortfolio..HousingNashville a
-join GowthamrajPortfolio..HousingNashville b   -- we use join to replace null values 
-	on a.ParcelID = b.ParcelID				   -- assuming similar parcelid has same propertyaddress
-	and a.[UniqueID ] <> b.[UniqueID ]		   -- unique id is different but parcelid will have same numbers
-where a.PropertyAddress is null
+SELECT a.parcelid, a.propertyADDress,b.parcelid, b.PropertyAddress --//viewing just possible outcome data
+FROM GowthamrajPortfolio..HousingNashville a
+JOIN GowthamrajPortfolio..HousingNashville b   -- we use JOIN to replace NULL values 
+	ON a.ParcelID = b.ParcelID				   -- assuming similar parcelid has same propertyADDress
+	AND a.[UniqueID ] <> b.[UniqueID ]		   -- unique id IS different but parcelid will have same numbers
+WHERE a.PropertyAddress IS NULL
 
-select a.parcelid, a.propertyaddress,b.parcelid, b.PropertyAddress, --//adding data column using previous step 
-isnull(a.propertyaddress,b.propertyaddress) as PopulatedAddress
-from GowthamrajPortfolio..HousingNashville a
-join GowthamrajPortfolio..HousingNashville b   -- we use join to replace null values 
-	on a.ParcelID = b.ParcelID				   -- assuming similar parcelid has same propertyaddress
-	and a.[UniqueID ] <> b.[UniqueID ]		   -- unique id is different but parcelid will have same numbers
-where a.PropertyAddress is null					-- this null values cant be seen after update command
+SELECT a.parcelid, a.propertyADDress,b.parcelid, b.PropertyAddress, --//ADDing data column using previous step 
+ISNULL(a.propertyADDress,b.propertyADDress) AS PopulatedAddress
+FROM GowthamrajPortfolio..HousingNashville a
+JOIN GowthamrajPortfolio..HousingNashville b   -- we use JOIN to replace NULL values 
+	ON a.ParcelID = b.ParcelID				   -- assuming similar parcelid has same propertyADDress
+	AND a.[UniqueID ] <> b.[UniqueID ]		   -- unique id IS different but parcelid will have same numbers
+WHERE a.PropertyAddress IS NULL					-- thIS NULL values cant be seen after UPDATE commAND
 
-update a								-- update the existing column null values, we can see null after this
-set propertyaddress = isnull(a.propertyaddress,b.propertyaddress)
-from GowthamrajPortfolio..HousingNashville a
-join GowthamrajPortfolio..HousingNashville b   -- we use join to replace null values 
-	on a.ParcelID = b.ParcelID				   -- assuming similar parcelid has same propertyaddress
-	and a.[UniqueID ] <> b.[UniqueID ]		   -- unique id is different but parcelid will have same numbers
-where a.PropertyAddress is null
+UPDATE a								-- UPDATE the exISting column NULL values, we can see NULL after thIS
+SET propertyADDress = ISNULL(a.propertyADDress,b.propertyADDress)
+FROM GowthamrajPortfolio..HousingNashville a
+JOIN GowthamrajPortfolio..HousingNashville b   -- we use JOIN to replace NULL values 
+	ON a.ParcelID = b.ParcelID				   -- assuming similar parcelid has same propertyADDress
+	AND a.[UniqueID ] <> b.[UniqueID ]		   -- unique id IS different but parcelid will have same numbers
+WHERE a.PropertyAddress IS NULL
 
---Separating address into individual columns(street,city)
-select PropertyAddress from HousingNashville
---where PropertyAddress is null
---order by ParcelID
+--Separating ADDress into individual columns(street,city)
+SELECT PropertyAddress FROM HousingNashville
+--WHERE PropertyAddress IS NULL
+--ORDER BY ParcelID
 
---using substring to split with ',' as delimiter
-select 
-SUBSTRING(propertyaddress, 1, charindex(',',propertyaddress) -1) as PropertyStr_address, --/+1/-1 is used to hide","in o/p
-SUBSTRING(propertyaddress, charindex(',',propertyaddress) +1, len(propertyaddress)) as PropertyCity_address 
-from HousingNashville
+--using substring to split WITH ',' AS delimiter
+SELECT 
+SUBSTRING(propertyADDress, 1, charindex(',',propertyADDress) -1) AS PropertyStr_ADDress, --/+1/-1 IS used to hide","in o/p
+SUBSTRING(propertyADDress, charindex(',',propertyADDress) +1, len(propertyADDress)) AS PropertyCity_ADDress 
+FROM HousingNashville
 
-alter table housingnashville add PropertyStr_address nvarchar(255)
-update HousingNashville set PropertyStr_address = SUBSTRING(propertyaddress, 1, charindex(',',propertyaddress) -1)
+ALTER TABLE housingnashville ADD PropertyStr_ADDress nvarchar(255)
+UPDATE HousingNashville SET PropertyStr_ADDress = SUBSTRING(propertyADDress, 1, charindex(',',propertyADDress) -1)
 
-alter table housingnashville add PropertyCity_address nvarchar(255)
-update HousingNashville set PropertyCity_address = SUBSTRING(propertyaddress, charindex(',',propertyaddress) +1, len(propertyaddress))
+ALTER TABLE housingnashville ADD PropertyCity_ADDress nvarchar(255)
+UPDATE HousingNashville SET PropertyCity_ADDress = SUBSTRING(propertyADDress, charindex(',',propertyADDress) +1, len(propertyADDress))
 
---//Another way to do this separation
-select * from HousingNashville
+--//ANOTher way to do thIS separatiON
+SELECT * FROM HousingNashville
 
-select												--Parsename will take from end to first. so 3 is 1 output
-PARSENAME(replace(owneraddress,',','.'),3) as OwnerStrAdd, --Parsename will only separate where '.' is delimitter
-PARSENAME(replace(owneraddress,',','.'),2) as OwnerCityAdd,--so we use replace to convert ',' to '.'
-PARSENAME(replace(owneraddress,',','.'),1) as OwnerStateAdd from HousingNashville
+SELECT												--Parsename will take FROM END to first. so 3 IS 1 output
+PARSENAME(replace(ownerADDress,',','.'),3) AS OwnerStrAdd, --Parsename will ONly separate WHERE '.' IS delimitter
+PARSENAME(replace(ownerADDress,',','.'),2) AS OwnerCityAdd,--so we use replace to cONvert ',' to '.'
+PARSENAME(replace(ownerADDress,',','.'),1) AS OwnerStateAdd FROM HousingNashville
 
-where OwnerAddress is not null
+WHERE OwnerAddress IS NOT NULL
 
---Now let's add this as separate column into the table
-alter table housingnashville
-add OwnStrAdd nvarchar(255)
+--Now let's ADD thIS AS separate column into the TABLE
+ALTER TABLE housingnashville
+ADD OwnStrAdd nvarchar(255)
 
-update HousingNashville 
-set ownstradd = PARSENAME(replace(owneraddress,',','.'),3)
-
-
-alter table housingnashville
-add OwnCityAdd nvarchar(255)
-
-update HousingNashville 
-set owncityadd = PARSENAME(replace(owneraddress,',','.'),2)
-
-alter table housingnashville
-add OwnStateAdd nvarchar(255)
-
-update HousingNashville 
-set ownstateadd = PARSENAME(replace(owneraddress,',','.'),1)
-
-select * from HousingNashville
+UPDATE HousingNashville 
+SET ownstrADD = PARSENAME(replace(ownerADDress,',','.'),3)
 
 
--- changing abbreviations like Y / Yes or N/No
+ALTER TABLE housingnashville
+ADD OwnCityAdd nvarchar(255)
 
-select soldasvacant from HousingNashville
+UPDATE HousingNashville 
+SET owncityADD = PARSENAME(replace(ownerADDress,',','.'),2)
 
-select distinct(soldasvacant), count(soldasvacant) from HousingNashville
-group by SoldAsVacant
-order by 2
+ALTER TABLE housingnashville
+ADD OwnStateAdd nvarchar(255)
 
-select distinct(soldasvacant), count(soldasvacant),
-case when soldasvacant = 'Y' then 'Yes'
-	when soldasvacant = 'N' then 'No'
-	else soldasvacant 
-	end 
-from HousingNashville
-group by SoldAsVacant
-order by 2
+UPDATE HousingNashville 
+SET ownstateADD = PARSENAME(replace(ownerADDress,',','.'),1)
 
-select soldasvacant,
-case when soldasvacant = 'Y' then 'Yes'
-	when soldasvacant = 'N' then 'No'
-	else soldasvacant 
-	end 
-from HousingNashville
+SELECT * FROM HousingNashville
 
-update HousingNashville 
-set SoldAsVacant = case when soldasvacant = 'Y' then 'Yes'
-	when soldasvacant = 'N' then 'No'
-	else soldasvacant 
-	end 
 
---//Viewing and removing duplicate values
-with RownumCTE as (
-select *, ROW_NUMBER() over(partition by Parcelid,
-										 propertyaddress,
-										 saleprice,
-										 saledate,
-										 legalreference  order by uniqueid) rownum
-from HousingNashville)         --//This will show us the duplicates as 2/3/4.. in rownum column
+-- changing abbreviatiONs like Y / Yes or N/No
 
---select * from RownumCTE
---where rownum > 1		  --//whereever rownum >1 it can be seen in output
---order by PropertyAddress  --// we can view duplicate values now, once we run delete it'll be gone.
+SELECT soldasvacant FROM HousingNashville
 
-delete from RownumCTE
-where rownum > 1
+SELECT DISTINCT(soldasvacant), COUNT(soldasvacant) FROM HousingNashville
+GROUP BY SoldAsVacant
+ORDER BY 2
+
+SELECT DISTINCT(soldasvacant), COUNT(soldasvacant),
+CASE WHEN soldasvacant = 'Y' THEN 'Yes'
+	WHEN soldasvacant = 'N' THEN 'No'
+	ELSE soldasvacant 
+	END 
+FROM HousingNashville
+GROUP BY SoldAsVacant
+ORDER BY 2
+
+SELECT soldasvacant,
+CASE WHEN soldasvacant = 'Y' THEN 'Yes'
+	WHEN soldasvacant = 'N' THEN 'No'
+	ELSE soldasvacant 
+	END 
+FROM HousingNashville
+
+UPDATE HousingNashville 
+SET SoldAsVacant = CASE WHEN soldasvacant = 'Y' THEN 'Yes'
+	WHEN soldasvacant = 'N' THEN 'No'
+	ELSE soldasvacant 
+	END 
+
+--//Viewing AND removing duplicate values
+WITH RownumCTE AS (
+SELECT *, ROW_NUMBER() over(partitiON by Parcelid,
+propertyADDress, saleprice, saledate, legalreference  ORDER BY uniqueid) rownum
+FROM HousingNashville)         --//ThIS will show us the duplicates AS 2/3/4.. in rownum column
+
+--SELECT * FROM RownumCTE
+--WHERE rownum > 1		  --//WHEREever rownum >1 it can be seen in output
+--ORDER BY PropertyAddress  --// we can view duplicate values now, ONce we run delete it'll be gONe.
+
+delete FROM RownumCTE
+WHERE rownum > 1
 
 --//Removing useless columns
 
-select * from HousingNashville
+SELECT * FROM HousingNashville
 
-alter table housingnashville
-drop column owneraddress
+ALTER TABLE housingnashville
+DROP column ownerADDress
 
 
 
